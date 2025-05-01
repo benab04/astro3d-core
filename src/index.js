@@ -1,4 +1,4 @@
-import { createCelestialBody } from './objects/Moon';
+import { createCelestialBody } from './objects/celestialBody';
 
 /**
  * Creates a moon with default textures
