@@ -1,17 +1,17 @@
-# 🌍 astro3d
+# 🌍 astro3d-core
 
-**Create realistic 3D spheres of planets, moons, and satellites — without reinventing the rocket.**
+**Create realistic 3D spheres of celestial bodies — the minimalist way.**
 
-This package lets you easily generate customizable 3D mesh spheres with high-quality textures for use in any `three.js` scene. Whether you're building an educational planetarium, simulating satellite orbits, or just want a cool spinning moon on your homepage — you don't need to write boilerplate material and texture code. Just plug it in and let it orbit.
+This lightweight package lets you easily generate customizable 3D mesh spheres with high-quality textures for use in any `three.js` scene. Whether you're building a planetarium, educational visualization, or just want a cool spinning planet on your homepage — astro3d-core provides the essential building blocks without unnecessary complexity.
 
 ---
 
 ## 🚀 Features
 
-- One-liner setup for textured 3D planetary bodies and satellites
+- Minimalist API for textured 3D celestial bodies
 - Fully customizable geometry and material parameters
-- High-quality default **color** and **normal maps**, with options to customize
-- Orbital simulation capabilities
+- Support for overlay layers (clouds, atmospheres, etc.)
+- Multiple overlay support with customizable opacity and scale
 - Designed for use with **Three.js**
 
 ---
@@ -19,20 +19,20 @@ This package lets you easily generate customizable 3D mesh spheres with high-qua
 ## 📦 Installation
 
 ```bash
-npm install astro3d
+npm install astro3d-core
 # or
-yarn add astro3d
+yarn add astro3d-core
 ```
 
 ---
 
 ## 🔧 Usage
 
-### Creating a Moon
+### Creating a Basic Celestial Body
 
 ```js
 import * as THREE from "three";
-import { createMoon } from "astro3d";
+import { createCelestialBody } from "astro3d-core";
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -41,144 +41,177 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-const moon = createMoon({
-  radius: 5,
-  widthSegments: 64,
-  heightSegments: 64,
-  roughness: 0.8,
-  metalness: 0.2,
+// Load your textures
+const colorMapURL = "path/to/earth-texture.jpg";
+const normalMapURL = "path/to/earth-normal-map.jpg";
+
+const earth = createCelestialBody({
+  radius: 3,
+  colorMapURL: colorMapURL,
+  normalMapURL: normalMapURL,
+  roughness: 0.4,
+  metalness: 0.001,
 });
 
-scene.add(moon);
-camera.position.z = 15;
+scene.add(earth);
+camera.position.z = 10;
 
 function animate() {
   requestAnimationFrame(animate);
-  moon.rotation.y += 0.005;
+  earth.rotation.y += 0.005;
   renderer.render(scene, camera);
 }
 
 animate();
 ```
 
-### Adding a Satellite
+### Creating a Planet with Clouds
 
 ```js
-import { createSatellite } from "astro3d";
+import * as THREE from "three";
+import { createCelestialBody } from "astro3d-core";
 
-// Create a satellite
-const satellite = createSatellite({
-  satelliteScale: 0.2,
-  lookAtTarget: [0, 0, 0], // Make it face toward the center
+// Standard Three.js setup
+// ...
+
+// Create Earth with cloud layer
+const earth = createCelestialBody({
+  radius: 3,
+  colorMapURL: "path/to/earth-texture.jpg",
+  normalMapURL: "path/to/earth-normal-map.jpg",
+  overlayMapURL: "path/to/clouds-texture.png",
+  overlayRadiusScale: 1.01, // Slightly larger than the planet
+  overlayOpacity: 0.6,
+  roughness: 0.4,
+  metalness: 0.001,
+  reflectivity: 0.1,
 });
 
-// Create an orbit path for the satellite
-const orbitRadius = 7;
-const satelliteOrbit = new THREE.Object3D();
-scene.add(satelliteOrbit);
+scene.add(earth);
 
-// Position the satellite in its orbit
-satellite.position.set(orbitRadius, 0, 0);
-satelliteOrbit.add(satellite);
-
-// Animate the orbit
+// Animation loop
 function animate() {
   requestAnimationFrame(animate);
-  moon.rotation.y += 0.005;
-  satelliteOrbit.rotation.y += 0.01; // Rotate the satellite around the moon
+  earth.rotation.y += 0.001;
+  // Cloud layer rotates with the planet as it's part of the same group
   renderer.render(scene, camera);
 }
+
+animate();
+```
+
+### Creating a Planet with Multiple Layers
+
+```js
+import * as THREE from "three";
+import { createCelestialBody } from "astro3d-core";
+
+// Create Jupiter with multiple cloud layers
+const jupiter = createCelestialBody({
+  radius: 5,
+  colorMapURL: "path/to/jupiter-texture.jpg",
+  overlayMapURL: ["path/to/jupiter-clouds-1.png", "path/to/jupiter-clouds-2.png", "path/to/jupiter-atmosphere.png"],
+  overlayRadiusScale: [1.001, 1.005, 1.01], // Different scales for each layer
+  overlayOpacity: [0.4, 0.3, 0.2], // Different opacities
+  roughness: 0.6,
+  metalness: 0.0,
+});
+
+scene.add(jupiter);
+
+// Animation
+function animate() {
+  requestAnimationFrame(animate);
+  jupiter.rotation.y += 0.002;
+  renderer.render(scene, camera);
+}
+
+animate();
 ```
 
 ---
 
 ## 🛠️ Parameters
 
-### Moon Parameters
+### Celestial Body Parameters
 
-Here's the full list of options you can pass to `createMoon`:
+Here's the full list of options you can pass to `createCelestialBody`:
 
-| Parameter           | Type          | Default                     | Description                             |
-| ------------------- | ------------- | --------------------------- | --------------------------------------- |
-| `radius`            | `number`      | `3`                         | Radius of the sphere                    |
-| `widthSegments`     | `number`      | `256`                       | Number of horizontal segments           |
-| `heightSegments`    | `number`      | `256`                       | Number of vertical segments             |
-| `colorMapURL`       | `string`      | `colorMap`                  | Path to the diffuse texture (color)     |
-| `normalMapURL`      | `string`      | `normalMap`                 | Path to the normal map                  |
-| `oblateness`        | `number`      | `0.0012`                    | Slight squashing for realism            |
-| `roughness`         | `number`      | `1.0`                       | How rough the surface appears           |
-| `metalness`         | `number`      | `0.0`                       | How metallic the surface appears        |
-| `reflectivity`      | `number`      | `0.05`                      | Reflectiveness of the material          |
-| `clearcoat`         | `number`      | `0.0`                       | Clearcoat layer for extra gloss         |
-| `aoMapIntensity`    | `number`      | `1.2`                       | Intensity of ambient occlusion          |
-| `lightMapIntensity` | `number`      | `1.0`                       | Intensity of baked lighting             |
-| `envMapIntensity`   | `number`      | `0.05`                      | Strength of environment reflection      |
-| `bumpScale`         | `number`      | `0.2`                       | Scale of bump mapping                   |
-| `normalScale`       | `number`      | `3.05`                      | Intensity of normal mapping             |
-| `flatShading`       | `boolean`     | `false`                     | Enable flat shading                     |
-| `transparent`       | `boolean`     | `false`                     | Enable transparency                     |
-| `side`              | `THREE.Side`  | `THREE.FrontSide`           | Which side(s) of the material to render |
-| `color`             | `THREE.Color` | `new THREE.Color(0x707070)` | Base material color                     |
-| `initialRotation`   | `number`      | `-Math.PI / 2`              | Initial Y rotation of the sphere        |
-
-### Satellite Parameters
-
-Here's the full list of options for `createSatellite`:
-
-| Parameter            | Type                   | Default                     | Description                              |
-| -------------------- | ---------------------- | --------------------------- | ---------------------------------------- |
-| `satelliteScale`     | `number`               | `0.7`                       | Overall scale factor for satellite       |
-| `satelliteWidth`     | `number`               | `0.04`                      | Width of satellite body                  |
-| `satelliteHeight`    | `number`               | `0.04`                      | Height of satellite body                 |
-| `satelliteDepth`     | `number`               | `0.04`                      | Depth of satellite body                  |
-| `wingWidth`          | `number`               | `0.08`                      | Width of solar panels                    |
-| `wingHeight`         | `number`               | `0.02`                      | Height of solar panels                   |
-| `wingDepth`          | `number`               | `0.002`                     | Depth of solar panels                    |
-| `wingOffset`         | `number`               | `0.06`                      | Distance of wings from center            |
-| `satelliteMapURL`    | `string`               | `satelliteMap`              | Path to satellite texture                |
-| `solarPanelMapURL`   | `string`               | `solarPanelMap`             | Path to solar panel texture              |
-| `satelliteRoughness` | `number`               | `0.5`                       | Satellite material roughness             |
-| `satelliteMetalness` | `number`               | `0.8`                       | Satellite material metalness             |
-| `panelRoughness`     | `number`               | `0.2`                       | Solar panel roughness                    |
-| `panelMetalness`     | `number`               | `0.5`                       | Solar panel metalness                    |
-| `satelliteColor`     | `THREE.Color`          | `new THREE.Color(0xFFFFFF)` | Base color for satellite                 |
-| `panelColor`         | `THREE.Color`          | `new THREE.Color(0x2244AA)` | Base color for panels                    |
-| `lookAtTarget`       | `Array\|THREE.Vector3` | `[0, 0, 0]`                 | Point the satellite toward this position |
+| Parameter            | Type            | Default                     | Description                             |
+| -------------------- | --------------- | --------------------------- | --------------------------------------- |
+| `radius`             | `number`        | `3`                         | Radius of the sphere                    |
+| `widthSegments`      | `number`        | `64`                        | Number of horizontal segments           |
+| `heightSegments`     | `number`        | `64`                        | Number of vertical segments             |
+| `colorMapURL`        | `string`        | -                           | Path to the diffuse texture (color)     |
+| `normalMapURL`       | `string`        | -                           | Path to the normal map                  |
+| `overlayMapURL`      | `string\|Array` | -                           | Path(s) to overlay texture(s)           |
+| `overlayRadiusScale` | `number\|Array` | `1.001`                     | Scale factor(s) for overlay(s)          |
+| `overlayOpacity`     | `number\|Array` | `0.6`                       | Opacity value(s) for overlay(s)         |
+| `oblateness`         | `number`        | `0`                         | Flattening of the sphere (0-1)          |
+| `roughness`          | `number`        | `0.8`                       | How rough the surface appears           |
+| `metalness`          | `number`        | `0.0`                       | How metallic the surface appears        |
+| `reflectivity`       | `number`        | `0.0`                       | Reflectiveness of the material          |
+| `clearcoat`          | `number`        | `0.0`                       | Clearcoat layer for extra gloss         |
+| `aoMapIntensity`     | `number`        | `0.8`                       | Intensity of ambient occlusion          |
+| `lightMapIntensity`  | `number`        | `1.0`                       | Intensity of baked lighting             |
+| `envMapIntensity`    | `number`        | `0.05`                      | Strength of environment reflection      |
+| `bumpScale`          | `number`        | `0.2`                       | Scale of bump mapping                   |
+| `normalScale`        | `number`        | `1.2`                       | Intensity of normal mapping             |
+| `flatShading`        | `boolean`       | `false`                     | Enable flat shading                     |
+| `transparent`        | `boolean`       | `false`                     | Enable transparency                     |
+| `side`               | `THREE.Side`    | `THREE.FrontSide`           | Which side(s) of the material to render |
+| `color`              | `THREE.Color`   | `new THREE.Color(0xFFFFFF)` | Base material color                     |
+| `initialRotation`    | `number`        | `-Math.PI / 2`              | Initial Y rotation of the sphere        |
 
 ---
 
-## 🖼️ Built-in Textures
+## 🔍 Advanced Features
 
-Each celestial object function like `createMoon` and `createSatellite` comes with its own built-in textures, no need to import or configure separately.
+### Multiple Overlay Support
+
+The `overlayMapURL` parameter can accept either a string or an array of strings to create multiple overlays:
+
+```js
+const planet = createCelestialBody({
+  // Basic parameters...
+  overlayMapURL: ["path/to/layer1.png", "path/to/layer2.png", "path/to/layer3.png"],
+  overlayRadiusScale: [1.001, 1.005, 1.01], // Different radius for each layer
+  overlayOpacity: [0.7, 0.5, 0.3], // Different opacity for each layer
+});
+```
+
+### Oblate Spheroid Support
+
+For more realistic gas giants or rapidly rotating planets:
+
+```js
+const jupiter = createCelestialBody({
+  // Basic parameters...
+  oblateness: 0.06478, // Jupiter's actual oblateness
+});
+```
 
 ---
 
-## 🌌 Credits
+## 🖼️ Textures
 
-Textures used for color and normal maps are courtesy of **[NASA](https://visibleearth.nasa.gov/)**, who generously provide high-resolution planetary data to the public.
+This package does not include textures. You'll need to provide URLs to your own texture maps.
 
----
+Good sources for planetary textures include:
 
-## 🚧 Current Status
-
-Currently, the package includes:
-
-- Moon
-- Satellite with solar panels
-- Earth
-- Jupiter
-
-Contributions to add more celestial bodies (like Earth, Mars, Jupiter...) are very welcome!
+- [NASA Visible Earth](https://visibleearth.nasa.gov/)
+- [Solar System Scope](https://www.solarsystemscope.com/textures/)
+- [Planetary Pixel Emporium](http://planetpixelemporium.com/planets.html)
 
 ---
 
-## 🚀 Examples
+## 🚀 Example
 
-### Create a Moon with Orbiting Satellite
+### Earth with Clouds and Atmospheric Glow
 
 ```js
 import * as THREE from "three";
-import { createMoon, createSatellite } from "astro3d";
+import { createCelestialBody } from "astro3d-core";
 
 // Standard Three.js setup
 const scene = new THREE.Scene();
@@ -189,51 +222,36 @@ document.body.appendChild(renderer.domElement);
 
 // Add lights
 const ambientLight = new THREE.AmbientLight(0x404040);
-const directionalLight = new THREE.DirectionalLight(0xffffff, 10);
-directionalLight.position.set(1, 0, 1).normalize();
+const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+directionalLight.position.set(5, 3, 5);
 scene.add(ambientLight);
 scene.add(directionalLight);
 
-// Create moon
-const moon = createMoon({ radius: 3 });
-scene.add(moon);
-
-// Create satellite and orbit
-const satellite = createSatellite({
-  satelliteScale: 0.2,
-  satelliteColor: new THREE.Color(0xcccccc),
-  panelColor: new THREE.Color(0x2244ff),
+// Create Earth with clouds and atmosphere
+const earth = createCelestialBody({
+  radius: 3,
+  widthSegments: 64,
+  heightSegments: 64,
+  colorMapURL: "path/to/earth-texture.jpg",
+  normalMapURL: "path/to/earth-normal-map.jpg",
+  overlayMapURL: ["path/to/clouds.png", "path/to/atmosphere-glow.png"],
+  overlayRadiusScale: [1.01, 1.03],
+  overlayOpacity: [0.6, 0.2],
+  roughness: 0.4,
+  metalness: 0.001,
+  reflectivity: 0.1,
+  oblateness: 0.0034, // Earth's actual oblateness
 });
 
-// Create orbit system
-const orbitRadius = 7;
-const satelliteOrbit = new THREE.Object3D();
-scene.add(satelliteOrbit);
-satellite.position.set(orbitRadius, 0, 0);
-satelliteOrbit.add(satellite);
-
-// Add visual orbit path (optional)
-const orbitPath = new THREE.Mesh(
-  new THREE.RingGeometry(orbitRadius - 0.03, orbitRadius + 0.03, 64),
-  new THREE.MeshBasicMaterial({
-    color: 0x3366ff,
-    side: THREE.DoubleSide,
-    transparent: true,
-    opacity: 0.3,
-  })
-);
-orbitPath.rotation.x = Math.PI / 2;
-scene.add(orbitPath);
+scene.add(earth);
 
 // Set camera position
-camera.position.z = 15;
+camera.position.z = 10;
 
 // Animation loop
 function animate() {
   requestAnimationFrame(animate);
-  moon.rotation.y += 0.001;
-  satelliteOrbit.rotation.y += 0.005;
-  satellite.rotation.y = -satelliteOrbit.rotation.y;
+  earth.rotation.y += 0.001;
   renderer.render(scene, camera);
 }
 
@@ -244,4 +262,6 @@ animate();
 
 ## 💫 Final Thoughts
 
-This library was built to save you time and boilerplate, and make your planetary and satellite visualizations _look good_. If it helps you, consider giving a star 🌟 or contributing with a pull request.
+astro3d-core is a lightweight library focused on providing the essential building blocks for creating realistic celestial bodies in your Three.js scenes. By keeping the API minimal, we give you the flexibility to build exactly what you need without the overhead.
+
+If you find this package helpful, consider giving it a star 🌟 or contributing with a pull request.
