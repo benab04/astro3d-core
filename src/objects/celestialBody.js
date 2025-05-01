@@ -3,13 +3,14 @@ import * as THREE from 'three';
 /**
  * Returns an Earth-like sphere mesh with customizable options
  * @param {Object} options
- * @param {boolean} options.night - Day or night mode (default: false)
  * @param {number} options.radius - Sphere radius (default: 3)
  * @param {number} options.widthSegments - Sphere width segments (default: 256)
  * @param {number} options.heightSegments - Sphere height segments (default: 256)
  * @param {string} options.colorMapURL - Path to color map image (default: colorMap)
  * @param {string} options.normalMapURL - Path to normal map image (default: normalMap)
- * @param {string} options.cloudsMapURL - Path to clouds map image (default: cloudsMap)
+ * @param {Array | string} options.overlayMapURL - Path to clouds map image (default: cloudsMap)
+ * @param {Array | number} options.overlayRadiusScale - Radius of overlay maps, can be an array of values or a single value (default: 1.001)
+ * @param {Array | number} options.overlayOpacity - Opacity of overlay maps, can be an array of values or a single value (default: 0.6)
  * @param {number} options.oblateness - Degree of oblateness (default: 0.0034)
  * @param {number} options.roughness - Material roughness (default: 0.4)
  * @param {number} options.metalness - Material metalness (default:  0.001)
@@ -18,15 +19,13 @@ import * as THREE from 'three';
  * @param {number} options.aoMapIntensity - Ambient occlusion map intensity (default: 0.8)
  * @param {number} options.lightMapIntensity - Light map intensity (default: 1.0)
  * @param {number} options.envMapIntensity - Environment map intensity (default: 0.3)
- * @param {number} options.bumpScale - Bump scale (default: 0.05)
- * @param {number} options.normalScale - Normal scale (default: 1.0)
+ * @param {number} options.bumpScale - Bump scale (default: 0.2)
+ * @param {number} options.normalScale - Normal scale (default: 1.2)
  * @param {number} options.flatShading - Flat shading (default: false)
  * @param {number} options.transparent - Transparency (default: false)
  * @param {number} options.side - Material side (default: THREE.FrontSide)
  * @param {THREE.Color} options.color - Base color (default: new THREE.Color(0xffffff))
  * @param {number} options.initialRotation - Initial rotation of the sphere (default: -1 * Math.PI / 2)
- * @param {boolean} options.showClouds - Whether to show cloud layer (default: true)
- * @param {number} options.cloudsOpacity - Opacity of cloud layer (default: 0.8)
  * @returns {THREE.Group} - Group containing Earth mesh and optional cloud layer
  */
 function createCelestialBody({
@@ -37,6 +36,7 @@ function createCelestialBody({
     normalMapURL,
     overlayMapURL,
     overlayRadiusScale = 1.001,
+    overlayOpacity = 0.6,
     oblateness = 0,
     roughness = 0.8,
     metalness = 0.0,
@@ -126,15 +126,22 @@ function createCelestialBody({
                         throw new Error("overlayMapURL and overlayRadiusScale arrays must be of the same length.");
                     }
                 }
+                if (Array.isArray(overlayOpacity)) {
+                    if (overlayMapURL.length !== overlayOpacity.length) {
+                        console.error("overlayMapURL and overlayOpacity arrays must be of the same length.");
+                        throw new Error("overlayMapURL and overlayOpacity arrays must be of the same length.");
+                    }
+                }
                 overlayMapURL.forEach((url) => {
                     const overlayTexture = new THREE.TextureLoader().load(url);
                     overlayTexture.minFilter = THREE.LinearFilter;
                     overlayTexture.magFilter = THREE.LinearFilter;
 
+                    layerOpacity = Array.isArray(overlayOpacity) ? overlayOpacity[i++] : overlayOpacity;
                     const overlayMaterial = new THREE.MeshPhysicalMaterial({
                         map: overlayTexture,
                         transparent: true,
-                        opacity: cloudsOpacity,
+                        opacity: layerOpacity,
                         blending: THREE.AdditiveBlending,
                         roughness: 1,
                         metalness: 0,
@@ -165,7 +172,7 @@ function createCelestialBody({
                 const overlayMaterial = new THREE.MeshPhysicalMaterial({
                     map: overlayTexture,
                     transparent: true,
-                    opacity: cloudsOpacity,
+                    opacity: overlayOpacity,
                     blending: THREE.AdditiveBlending,
                     roughness: 1,
                     metalness: 0,
