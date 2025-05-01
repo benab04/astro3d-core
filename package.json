@@ -1,0 +1,61 @@
+{
+  "name": "astro3d-core",
+  "version": "1.0.0",
+  "description": "astro3d-core is a lightweight and minimalistic version of the original astro3d package. Designed for performance and flexibility, this version allows users to build custom visualizations of celestial bodies using their own maps, without the overhead of preloaded objects and textures. By excluding bundled datasets, astro3d-core offers a faster and smaller footprint. It supports multiple overlays—beyond standard normal and color maps—enabling detailed, layered surface rendering for planets, moons, and other astronomical entities.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "webpack --mode production",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "astro3d-core",
+    "astro3d minimal version",
+    "custom 3D planet renderer",
+    "three.js celestial body viewer",
+    "3D space visualization",
+    "lightweight three.js astronomy library",
+    "custom planet texture mapping",
+    "interactive 3D space models",
+    "three.js Earth visualization",
+    "three.js Moon rendering",
+    "WebGL planet viewer",
+    "3D celestial sphere rendering",
+    "custom map overlays three.js",
+    "three.js planet surface visualization",
+    "high-performance 3D space viewer",
+    "3D astronomy visualization tools",
+    "build planets with custom textures",
+    "space science 3D rendering",
+    "planet map overlays three.js",
+    "GPU-accelerated space visualization",
+    "scientific data visualization WebGL",
+    "real-time 3D space simulation",
+    "educational astronomy 3D tools",
+    "customizable 3D celestial objects",
+    "WebGL sphere texture mapping"
+  ],
+  "author": "Ben Abraham Biju",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/benab04/astro3d-core"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "three": "^0.176.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.10",
+    "@babel/preset-env": "^7.26.9",
+    "babel-loader": "^10.0.0",
+    "css-loader": "^7.1.2",
+    "file-loader": "^6.2.0",
+    "style-loader": "^4.0.0",
+    "url-loader": "^4.1.1",
+    "webpack": "^5.99.7",
+    "webpack-cli": "^6.0.1"
+  }
+}
