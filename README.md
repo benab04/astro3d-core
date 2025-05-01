@@ -33,6 +33,8 @@ yarn add astro3d-core
 ```js
 import * as THREE from "three";
 import { createCelestialBody } from "astro3d-core";
+import colorMapURL from "path/to/earth-texture.jpg";
+import normalMapURL from "path/to/earth-texture.jpg";
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -40,10 +42,6 @@ const renderer = new THREE.WebGLRenderer();
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
-
-// Load your textures
-const colorMapURL = "path/to/earth-texture.jpg";
-const normalMapURL = "path/to/earth-normal-map.jpg";
 
 const earth = createCelestialBody({
   radius: 3,
@@ -70,16 +68,18 @@ animate();
 ```js
 import * as THREE from "three";
 import { createCelestialBody } from "astro3d-core";
-
+import colorMapURL from "path/to/earth-texture.jpg";
+import normalMapURL from "path/to/earth-texture.jpg";
+import overlayMapURL from "path/to/clouds-texture.png";
 // Standard Three.js setup
 // ...
 
 // Create Earth with cloud layer
 const earth = createCelestialBody({
   radius: 3,
-  colorMapURL: "path/to/earth-texture.jpg",
-  normalMapURL: "path/to/earth-normal-map.jpg",
-  overlayMapURL: "path/to/clouds-texture.png",
+  colorMapURL: colorMapURL,
+  normalMapURL: normalMapURL,
+  overlayMapURL: overlayMapURL,
   overlayRadiusScale: 1.01, // Slightly larger than the planet
   overlayOpacity: 0.6,
   roughness: 0.4,
@@ -105,12 +105,15 @@ animate();
 ```js
 import * as THREE from "three";
 import { createCelestialBody } from "astro3d-core";
-
+import colorMapURL from "path/to/earth-texture.jpg";
+import overlay1 from "path/to/jupiter-clouds-1.png";
+import overlay2 from "path/to/jupiter-clouds-2.png";
+import overlay3 from "path/to/jupiter-atmosphere.png";
 // Create Jupiter with multiple cloud layers
 const jupiter = createCelestialBody({
   radius: 5,
-  colorMapURL: "path/to/jupiter-texture.jpg",
-  overlayMapURL: ["path/to/jupiter-clouds-1.png", "path/to/jupiter-clouds-2.png", "path/to/jupiter-atmosphere.png"],
+  colorMapURL: colorMapURL,
+  overlayMapURL: [overlay1, overlay2, overlay3],
   overlayRadiusScale: [1.001, 1.005, 1.01], // Different scales for each layer
   overlayOpacity: [0.4, 0.3, 0.2], // Different opacities
   roughness: 0.6,
@@ -212,6 +215,10 @@ Good sources for planetary textures include:
 ```js
 import * as THREE from "three";
 import { createCelestialBody } from "astro3d-core";
+import colorMapURL from "path/to/earth-texture.jpg";
+import normalMapURL from "path/to/earth-normal-map.jpg";
+import overlayMapURL1 from "path/to/clouds.png";
+import overlayMapURL2 from "path/to/atmosphere-glow.png";
 
 // Standard Three.js setup
 const scene = new THREE.Scene();
@@ -232,9 +239,9 @@ const earth = createCelestialBody({
   radius: 3,
   widthSegments: 64,
   heightSegments: 64,
-  colorMapURL: "path/to/earth-texture.jpg",
-  normalMapURL: "path/to/earth-normal-map.jpg",
-  overlayMapURL: ["path/to/clouds.png", "path/to/atmosphere-glow.png"],
+  colorMapURL: colorMapURL,
+  normalMapURL : normalMapURL,
+  overlayMapURL : [overlayMapURL1, overlayMapURL2]
   overlayRadiusScale: [1.01, 1.03],
   overlayOpacity: [0.6, 0.2],
   roughness: 0.4,
