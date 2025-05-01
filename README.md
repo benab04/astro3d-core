@@ -105,7 +105,7 @@ animate();
 ```js
 import * as THREE from "three";
 import { createCelestialBody } from "astro3d-core";
-import colorMapURL from "path/to/earth-texture.jpg";
+import colorMapURL from "path/to/jupiter-texture.jpg";
 import overlay1 from "path/to/jupiter-clouds-1.png";
 import overlay2 from "path/to/jupiter-clouds-2.png";
 import overlay3 from "path/to/jupiter-atmosphere.png";
