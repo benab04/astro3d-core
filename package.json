@@ -1,6 +1,6 @@
 {
   "name": "astro3d-core",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "astro3d-core is a lightweight and minimalistic version of the original astro3d package. Designed for performance and flexibility, this version allows users to build custom visualizations of celestial bodies using their own maps, without the overhead of preloaded objects and textures. By excluding bundled datasets, astro3d-core offers a faster and smaller footprint. It supports multiple overlays—beyond standard normal and color maps—enabling detailed, layered surface rendering for planets, moons, and other astronomical entities.",
   "main": "dist/index.js",
   "scripts": {
